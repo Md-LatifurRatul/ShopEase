@@ -1,8 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:e_commerce_project/model/Products.dart';
+import 'dart:async';
+
 import 'package:e_commerce_project/model/product_model.dart';
-import 'package:e_commerce_project/screens/product_detai_screen.dart';
+import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/screens/product_details_screen.dart';
 import 'package:e_commerce_project/services/api_services.dart';
+import 'package:e_commerce_project/utils/banner_image_url.dart';
+import 'package:e_commerce_project/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,23 +17,41 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late Future<ProductModel> futureProducts;
-  List<Products> _products = [];
-  List<Products> _filteredProducts = [];
+  List<ProductsItem> _products = [];
+  List<ProductsItem> _filteredProducts = [];
   final TextEditingController _searchTEController = TextEditingController();
-  final PageController _bannerController = PageController(
-    viewportFraction: 0.9,
-  );
+  late PageController _bannerController;
+  int _currentIndex = 0;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     futureProducts = ApiServices().fetchProudcts();
+    _bannerController = PageController(viewportFraction: 0.9, initialPage: 0);
+
+    _startAutoSlide();
 
     futureProducts.then((data) {
       setState(() {
         _products = data.products!;
         _filteredProducts = _products;
       });
+    });
+  }
+
+  void _startAutoSlide() {
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      if (_currentIndex < BannerImageUrl.bannerImage.length - 1) {
+        _currentIndex++;
+      } else {
+        _currentIndex = 0;
+      }
+      _bannerController.animateToPage(
+        _currentIndex,
+        duration: Duration(microseconds: 500),
+        curve: Curves.easeInOut,
+      );
     });
   }
 
@@ -69,15 +90,9 @@ class _HomeScreenState extends State<HomeScreen> {
               controller: _bannerController,
 
               children: [
-                _buildBanner("https://placehold.co/600x400/png", "Big Sale!"),
-                _buildBanner(
-                  "https://placehold.co/600x400/png",
-                  "New Arrivals",
-                ),
-                _buildBanner(
-                  "https://placehold.co/600x400/png",
-                  "Exclusive Offers",
-                ),
+                _buildBanner(BannerImageUrl.bannerImage[0], "Big Sale!"),
+                _buildBanner(BannerImageUrl.bannerImage[1], "New Arrivals"),
+                _buildBanner(BannerImageUrl.bannerImage[2], "Exclusive Offers"),
               ],
             ),
           ),
@@ -132,63 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
                         },
-                        child: Card(
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(10),
-                                  ),
-
-                                  child: CachedNetworkImage(
-                                    imageUrl: product.thumbnail!,
-                                    placeholder:
-                                        (context, url) => Center(
-                                          child: CircularProgressIndicator(),
-                                        ),
-                                    errorWidget:
-                                        (context, url, error) =>
-                                            Icon(Icons.error),
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      product.title!,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      "\$${product.price}",
-                                      style: TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        child: ProductCard(product: product),
                       );
                     },
                   );
@@ -230,5 +189,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _bannerController.dispose();
+    _timer?.cancel();
+    super.dispose();
   }
 }
