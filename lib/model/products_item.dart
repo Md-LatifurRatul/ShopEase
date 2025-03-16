@@ -2,7 +2,7 @@ import 'package:e_commerce_project/model/meta.dart';
 import 'package:e_commerce_project/model/dimensions.dart';
 import 'package:e_commerce_project/model/reviews.dart';
 
-class Products {
+class ProductsItem {
   int? id;
   String? title;
   String? description;
@@ -26,7 +26,7 @@ class Products {
   String? thumbnail;
   List<String>? images;
 
-  Products({
+  ProductsItem({
     this.id,
     this.title,
     this.description,
@@ -51,13 +51,13 @@ class Products {
     this.images,
   });
 
-  Products.fromJson(Map<String, dynamic> json) {
+  ProductsItem.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     title = json['title'];
     description = json['description'];
     category = json['category'];
-    price = json['price'];
-    discountPercentage = json['discountPercentage'];
+    price = (json['price'] as num?)?.toDouble();
+    discountPercentage = (json['discountPercentage'] as num?)?.toDouble();
     rating = json['rating'];
     stock = json['stock'];
     tags = json['tags'].cast<String>();

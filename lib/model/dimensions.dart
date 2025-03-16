@@ -6,8 +6,8 @@ class Dimensions {
   Dimensions({this.width, this.height, this.depth});
 
   Dimensions.fromJson(Map<String, dynamic> json) {
-    width = json['width'];
-    height = json['height'];
+    width = (json['width'] as num).toDouble();
+    height = (json['height'] as num?)?.toDouble();
     depth = json['depth'];
   }
 

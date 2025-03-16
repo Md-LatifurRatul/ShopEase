@@ -1,7 +1,7 @@
-import 'package:e_commerce_project/model/Products.dart';
+import 'package:e_commerce_project/model/products_item.dart';
 
 class ProductModel {
-  List<Products>? products;
+  List<ProductsItem>? products;
   int? total;
   int? skip;
   int? limit;
@@ -10,9 +10,9 @@ class ProductModel {
 
   ProductModel.fromJson(Map<String, dynamic> json) {
     if (json['products'] != null) {
-      products = <Products>[];
+      products = <ProductsItem>[];
       json['products'].forEach((v) {
-        products!.add(Products.fromJson(v));
+        products!.add(ProductsItem.fromJson(v));
       });
     }
     total = json['total'];

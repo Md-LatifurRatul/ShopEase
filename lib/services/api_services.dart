@@ -7,6 +7,7 @@ import 'package:http/http.dart';
 class ApiServices {
   Future<ProductModel> fetchProudcts() async {
     final response = await get(Uri.parse(ApiUrl.apiUrl));
+    // Uri.parse("${ApiUrl.apiUrl}?skip=$skip&limit=$limit"),
 
     if (response.statusCode == 200) {
       return ProductModel.fromJson(jsonDecode(response.body));
