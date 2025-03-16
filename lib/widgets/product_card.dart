@@ -4,9 +4,15 @@ import 'package:e_commerce_project/model/products_item.dart';
 import 'package:flutter/material.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.product});
+  const ProductCard({
+    super.key,
+    required this.product,
+    required this.onAddToCart,
+  });
 
   final ProductsItem product;
+
+  final Function(ProductsItem) onAddToCart;
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +51,26 @@ class ProductCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 SizedBox(height: 4),
-                Text(
-                  "\$${product.price}",
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      "\$${product.price}",
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Spacer(),
+                    IconButton(
+                      onPressed: () {
+                        onAddToCart(product);
+                      },
+                      icon: Icon(
+                        Icons.add_shopping_cart,
+                        color: Colors.blueGrey,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

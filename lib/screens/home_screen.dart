@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:e_commerce_project/model/product_model.dart';
 import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/screens/cart_screen.dart';
 import 'package:e_commerce_project/screens/product_details_screen.dart';
 import 'package:e_commerce_project/services/api_services.dart';
 import 'package:e_commerce_project/utils/banner_image_url.dart';
@@ -18,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late Future<ProductModel> futureProducts;
   List<ProductsItem> _products = [];
+  final List<ProductsItem> _cartItems = [];
   List<ProductsItem> _filteredProducts = [];
   final TextEditingController _searchTEController = TextEditingController();
   late PageController _bannerController;
@@ -72,12 +74,61 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void addToCart(ProductsItem product) {
+    setState(() {
+      _cartItems.add(product);
+    });
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("${product.title} added to cart!")));
+  }
+
+  void openCart() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CartScreen(cartItems: _cartItems),
+      ),
+    );
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('E-Commerce App'),
         backgroundColor: Colors.deepPurple,
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                onPressed: openCart,
+
+                icon: Icon(Icons.shopping_cart, color: Colors.white),
+              ),
+
+              if (_cartItems.isNotEmpty)
+                Positioned(
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: BoxConstraints(minWidth: 20, minHeight: 20),
+                    child: Text(
+                      "${_cartItems.length}",
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -129,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: EdgeInsets.all(8),
                     itemCount: _filteredProducts.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
+                      crossAxisCount: 3,
                       childAspectRatio: 0.7,
                       crossAxisSpacing: 8,
                       mainAxisSpacing: 8,
@@ -147,7 +198,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
                         },
-                        child: ProductCard(product: product),
+                        child: ProductCard(
+                          product: product,
+                          onAddToCart: addToCart,
+                        ),
                       );
                     },
                   );
