@@ -1,10 +1,12 @@
-# e_commerce_project
+# Shopify E-Commerce Project
 
 A new Flutter project.
 
 ## Getting Started
 
 This project is a starting point for a Flutter application.
+
+## You need to crate a api_url file (lib/services/utils/api_url.dart)
 
 A few resources to get you started if this is your first Flutter project:
 

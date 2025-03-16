@@ -6,8 +6,6 @@ import 'package:http/http.dart';
 
 class ApiServices {
   Future<ProductModel> fetchProudcts() async {
-    // Important: You need to crate a api_url file
-
     final response = await get(Uri.parse(ApiUrl.apiUrl));
 
     if (response.statusCode == 200) {
