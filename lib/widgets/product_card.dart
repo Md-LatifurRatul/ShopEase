@@ -52,6 +52,7 @@ class ProductCard extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       "\$${product.price}",
@@ -61,13 +62,15 @@ class ProductCard extends StatelessWidget {
                       ),
                     ),
                     Spacer(),
-                    IconButton(
-                      onPressed: () {
-                        onAddToCart(product);
-                      },
-                      icon: Icon(
-                        Icons.add_shopping_cart,
-                        color: Colors.blueGrey,
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () {
+                          onAddToCart(product);
+                        },
+                        icon: Icon(
+                          Icons.add_shopping_cart,
+                          color: Colors.blueGrey,
+                        ),
                       ),
                     ),
                   ],

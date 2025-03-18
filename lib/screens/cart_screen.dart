@@ -1,4 +1,8 @@
 import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/screens/checkout_screen.dart';
+import 'package:e_commerce_project/widgets/confirm_dialog.dart';
+import 'package:e_commerce_project/widgets/toast_meesage.dart';
+
 import 'package:flutter/material.dart';
 
 class CartScreen extends StatefulWidget {
@@ -22,8 +26,16 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
+    _initializerCart();
+  }
+
+  void _initializerCart() {
     for (var item in widget.cartItems) {
-      cartQuantity[item] = (cartQuantity[item] ?? 0) + 1;
+      if (cartQuantity.containsKey(item)) {
+        cartQuantity[item] = (cartQuantity[item] ?? 0) + 1;
+      } else {
+        cartQuantity[item] = 1;
+      }
     }
   }
 
@@ -52,6 +64,27 @@ class _CartScreenState extends State<CartScreen> {
       total += (item.price! * quantity);
     });
     return total;
+  }
+
+  Future<void> _checkout() async {
+    if (widget.cartItems.isEmpty) {
+      ToastMeesage.showToastMessage(context, 'Cart is empty!');
+      return;
+    }
+
+    bool? orderPlaced = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CheckoutScreen(cartItems: cartQuantity),
+      ),
+    );
+
+    if (orderPlaced == true) {
+      setState(() {
+        widget.cartItems.clear();
+        cartQuantity.clear();
+      });
+    }
   }
 
   @override
@@ -100,12 +133,46 @@ class _CartScreenState extends State<CartScreen> {
                   Padding(
                     padding: const EdgeInsets.all(16),
 
-                    child: Text(
-                      "\$${getTotalPrice().toStringAsFixed(2)}",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Column(
+                      children: [
+                        Text(
+                          "\$${getTotalPrice().toStringAsFixed(2)}",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: () {
+                              ConfirmDialog.showAlertDialgoue(
+                                context,
+                                title: "Continue Checkout",
+                                content: "Do you want to checkout?",
+                                onPressed: () async {
+                                  await _checkout();
+                                },
+                              );
+                            },
+                            child: Text(
+                              'checkout',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

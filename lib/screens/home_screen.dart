@@ -7,6 +7,7 @@ import 'package:e_commerce_project/screens/product_details_screen.dart';
 import 'package:e_commerce_project/services/api_services.dart';
 import 'package:e_commerce_project/utils/banner_image_url.dart';
 import 'package:e_commerce_project/widgets/product_card.dart';
+import 'package:e_commerce_project/widgets/toast_meesage.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -51,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       _bannerController.animateToPage(
         _currentIndex,
-        duration: Duration(microseconds: 500),
+        duration: Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
     });
@@ -78,19 +79,19 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _cartItems.add(product);
     });
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("${product.title} added to cart!")));
+
+    ToastMeesage.showToastMessage(context, "${product.title} added to cart!");
   }
 
   void openCart() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CartScreen(cartItems: _cartItems),
-      ),
-    );
-    setState(() {});
+    setState(() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CartScreen(cartItems: _cartItems),
+        ),
+      );
+    });
   }
 
   @override
@@ -110,6 +111,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
               if (_cartItems.isNotEmpty)
                 Positioned(
+                  right: 8,
+                  top: 8,
                   child: Container(
                     padding: EdgeInsets.all(5),
 
@@ -121,6 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     constraints: BoxConstraints(minWidth: 20, minHeight: 20),
                     child: Text(
                       "${_cartItems.length}",
+
                       style: TextStyle(color: Colors.white, fontSize: 12),
                       textAlign: TextAlign.center,
                     ),
