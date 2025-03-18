@@ -106,15 +106,16 @@ class _HomeScreenState extends State<HomeScreen> {
               IconButton(
                 onPressed: openCart,
 
-                icon: Icon(Icons.shopping_cart, color: Colors.white),
+                icon: Icon(Icons.shopping_cart, color: Colors.white, size: 35),
               ),
 
               if (_cartItems.isNotEmpty)
                 Positioned(
-                  right: 8,
-                  top: 8,
+                  top: 4,
+                  right: 4,
+
                   child: Container(
-                    padding: EdgeInsets.all(5),
+                    padding: EdgeInsets.all(3),
 
                     decoration: BoxDecoration(
                       color: Colors.red,
@@ -131,6 +132,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
             ],
+          ),
+          const SizedBox(width: 10),
+          IconButton(
+            style: IconButton.styleFrom(backgroundColor: Colors.yellow),
+            onPressed: () {},
+            icon: Icon(Icons.logout),
           ),
         ],
       ),

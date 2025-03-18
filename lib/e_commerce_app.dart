@@ -1,4 +1,4 @@
-import 'package:e_commerce_project/screens/home_screen.dart';
+import 'package:e_commerce_project/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 class ECommerceApp extends StatelessWidget {
@@ -9,7 +9,8 @@ class ECommerceApp extends StatelessWidget {
     return MaterialApp(
       title: 'E-Commerce',
       debugShowCheckedModeBanner: false,
-      home: HomeScreen(),
+      // home: HomeScreen(),
+      home: const SplashScreen(),
     );
   }
 }
