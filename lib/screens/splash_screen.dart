@@ -1,4 +1,9 @@
-import 'package:e_commerce_project/screens/authentication/sign_up_screen.dart';
+import 'dart:async';
+
+import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
+import 'package:e_commerce_project/screens/authentication/login_screen.dart';
+import 'package:e_commerce_project/screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -9,6 +14,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final authService = FirebaseAuthService();
+  StreamSubscription<User?>? _authSubscription;
   @override
   void initState() {
     super.initState();
@@ -18,12 +25,30 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _proccedToNextScreen() {
-    //Todo: Firebase user checking code
+    //! Firebase user checking code
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const SignUpScreen()),
-    );
+    _authSubscription = authService.authStateChanges().listen((User? user) {
+      if (mounted) {
+        if (user == null) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+            (route) => false,
+          );
+        } else {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (route) => false,
+          );
+        }
+      }
+    });
+
+    // Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute(builder: (context) => const LoginScreen()),
+    // );
   }
 
   @override
@@ -50,5 +75,11 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 }

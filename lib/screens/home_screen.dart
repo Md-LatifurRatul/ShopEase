@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:e_commerce_project/controllers/services/auth_exception.dart';
+import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
 import 'package:e_commerce_project/model/product_model.dart';
 import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/screens/authentication/login_screen.dart';
 import 'package:e_commerce_project/screens/cart_screen.dart';
 import 'package:e_commerce_project/screens/product_details_screen.dart';
 import 'package:e_commerce_project/services/api_services.dart';
 import 'package:e_commerce_project/utils/banner_image_url.dart';
+import 'package:e_commerce_project/widgets/confirm_dialog.dart';
 import 'package:e_commerce_project/widgets/product_card.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late PageController _bannerController;
   int _currentIndex = 0;
   Timer? _timer;
+  final _firebaseAuthService = FirebaseAuthService();
 
   @override
   void initState() {
@@ -94,6 +99,26 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _signOut() async {
+    try {
+      await _firebaseAuthService.signOut();
+      if (mounted) {
+        ToastMeesage.showToastMessage(context, "Sign out success");
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false,
+        );
+      }
+    } on AuthException catch (e) {
+      print("Sign out error: ${e.message}");
+
+      if (mounted) {
+        ToastMeesage.showToastMessage(context, "Sign out failed: ${e.message}");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,7 +161,17 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(width: 10),
           IconButton(
             style: IconButton.styleFrom(backgroundColor: Colors.yellow),
-            onPressed: () {},
+            onPressed: () {
+              ConfirmDialog.showAlertDialgoue(
+                context,
+                title: "Sign Out",
+                content: "Are you sure you want to log-out?",
+                confirmString: "Log-out",
+                onPressed: () {
+                  _signOut();
+                },
+              );
+            },
             icon: Icon(Icons.logout),
           ),
         ],
