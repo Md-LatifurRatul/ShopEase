@@ -1,5 +1,8 @@
+import 'package:e_commerce_project/controllers/services/auth_exception.dart';
+import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
 import 'package:e_commerce_project/screens/authentication/login_screen.dart';
 import 'package:e_commerce_project/widgets/custom_auth_elevated_button.dart';
+import 'package:e_commerce_project/widgets/toast_meesage.dart';
 import 'package:flutter/material.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -21,13 +24,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final _firebaseAuthService = FirebaseAuthService();
 
   bool _obscurePassword = true;
   bool _obscurefinalPassword = true;
 
+  Future<void> _signUpUser() async {
+    try {
+      final user = await _firebaseAuthService.createUserWithEmailAndPassword(
+        _emailNameController.text.trim(),
+        _passwordController.text.trim(),
+      );
+      print(user);
+      await _firebaseAuthService.signOut();
+      if (mounted) {
+        ToastMeesage.showToastMessage(context, "Sign up success");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (copntext) => const LoginScreen()),
+        );
+      }
+    } on AuthException catch (e) {
+      print("Sign up error: ${e.message}");
+
+      if (mounted) {
+        ToastMeesage.showToastMessage(context, "Sign up failed: ${e.message}");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(28),
+
+        child: AppBar(
+          automaticallyImplyLeading: true,
+
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        ),
+      ),
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
 
       body: SingleChildScrollView(
@@ -62,9 +99,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Column(
                   children: [
                     CustomAuthElevatedButton(
-                      formKey: _formKey,
                       buttonName: "Register",
-                      authSuccessMessage: "Registered Succefully",
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _signUpUser();
+                        }
+                      },
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
