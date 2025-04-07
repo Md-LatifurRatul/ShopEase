@@ -26,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<ProductsItem> _products = [];
   final List<ProductsItem> _cartItems = [];
   List<ProductsItem> _filteredProducts = [];
+  Set<String> _categories = {};
   final TextEditingController _searchTEController = TextEditingController();
   late PageController _bannerController;
   int _currentIndex = 0;
@@ -44,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {
         _products = data.products!;
         _filteredProducts = _products;
+        _categories = _products.map((p) => p.category!).toSet();
       });
     });
   }
@@ -77,6 +79,25 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
               )
               .toList();
+    });
+  }
+
+  void _applyFilters({
+    String? category,
+    required double minPrice,
+    required double maxPrice,
+    required double minRating,
+  }) {
+    setState(() {
+      _filteredProducts =
+          _products.where((product) {
+            final matchCategory =
+                category == null || product.category == category;
+            final matchPrice =
+                product.price! >= minPrice && product.price! <= maxPrice;
+            final matchRating = product.rating! >= minRating;
+            return matchCategory && matchPrice && matchRating;
+          }).toList();
     });
   }
 
@@ -194,6 +215,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           SizedBox(height: 10),
+          TextButton.icon(
+            icon: Icon(Icons.filter_alt),
+            onPressed: _showFilterModelSheet,
+            label: Text("Filter", style: TextStyle(fontSize: 18)),
+          ),
+          SizedBox(height: 10),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -210,6 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
+
           SizedBox(height: 10),
           Expanded(
             child: FutureBuilder<ProductModel>(
@@ -226,9 +254,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: EdgeInsets.all(8),
                     itemCount: _filteredProducts.length,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
+                      crossAxisCount: 2,
                       childAspectRatio: 0.7,
-                      crossAxisSpacing: 8,
+                      crossAxisSpacing: 6,
                       mainAxisSpacing: 8,
                     ),
                     itemBuilder: (context, index) {
@@ -288,6 +316,99 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showFilterModelSheet() {
+    String? selectedCategory;
+    double minPrice = 0;
+    double maxPrice = 1000;
+    double selectedRating = 0;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  DropdownButtonFormField<String>(
+                    value: selectedCategory,
+                    hint: Text("Select Category"),
+
+                    items:
+                        _categories.map((cate) {
+                          return DropdownMenuItem(
+                            value: cate,
+
+                            child: Text(cate),
+                          );
+                        }).toList(),
+                    onChanged: (val) {
+                      setState(() {
+                        selectedCategory = val;
+                      });
+                    },
+                  ),
+
+                  SizedBox(height: 12),
+
+                  Text(
+                    "Price Range: \$${minPrice.toInt()} - \$${maxPrice.toInt()}",
+                  ),
+
+                  RangeSlider(
+                    min: 0,
+                    max: 2000,
+                    divisions: 20,
+
+                    values: RangeValues(minPrice, maxPrice),
+                    onChanged: (value) {
+                      setState(() {
+                        minPrice = value.start;
+                        maxPrice = value.end;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 12),
+
+                  Text("Minimum Rating: ${selectedRating.toStringAsFixed(1)}"),
+
+                  Slider(
+                    min: 0,
+                    max: 5,
+                    divisions: 10,
+                    label: selectedRating.toString(),
+                    value: selectedRating,
+                    onChanged: (val) {
+                      setState(() {
+                        selectedRating = val;
+                      });
+                    },
+                  ),
+
+                  SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _applyFilters(
+                        category: selectedCategory,
+                        minPrice: minPrice,
+                        maxPrice: maxPrice,
+                        minRating: selectedRating,
+                      );
+                    },
+                    child: Text("Apply Filters"),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
