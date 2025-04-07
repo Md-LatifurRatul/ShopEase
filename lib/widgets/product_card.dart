@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce_project/model/products_item.dart';
-
+import 'package:e_commerce_project/widgets/build_stars_rating.dart';
 import 'package:flutter/material.dart';
 
 class ProductCard extends StatelessWidget {
@@ -53,6 +53,7 @@ class ProductCard extends StatelessWidget {
                 SizedBox(height: 4),
                 Row(
                   mainAxisSize: MainAxisSize.min,
+
                   children: [
                     Text(
                       "\$${product.price}",
@@ -61,7 +62,14 @@ class ProductCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Spacer(),
+
+                    Row(
+                      children: BuildStarsRating.buildStarRating(
+                        product.rating ?? 0,
+                        15,
+                      ),
+                    ),
+
                     Expanded(
                       child: IconButton(
                         onPressed: () {

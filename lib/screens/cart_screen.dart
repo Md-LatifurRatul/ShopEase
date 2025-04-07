@@ -2,7 +2,6 @@ import 'package:e_commerce_project/model/products_item.dart';
 import 'package:e_commerce_project/screens/checkout_screen.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
-
 import 'package:flutter/material.dart';
 
 class CartScreen extends StatefulWidget {
@@ -98,7 +97,10 @@ class _CartScreenState extends State<CartScreen> {
               : Column(
                 children: [
                   Expanded(
-                    child: ListView.builder(
+                    child: ListView.separated(
+                      separatorBuilder: (context, index) {
+                        return Divider(height: 2);
+                      },
                       itemCount: widget.cartItems.length,
                       itemBuilder: (context, index) {
                         final item = widget.cartItems[index];
