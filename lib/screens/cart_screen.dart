@@ -102,72 +102,81 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final cartItemsUnique = cartQuantity.keys.toList();
-    return Scaffold(
-      appBar: AppBar(title: Text('Cart')),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Navigator.pop(context, widget.cartItems);
+        }
+      },
 
-      body:
-          cartItemsUnique.isEmpty
-              ? Center(child: Text('Your cart is empty'))
-              : Column(
-                children: [
-                  Expanded(
-                    child: AnimatedList(
-                      key: _listKey,
+      child: Scaffold(
+        appBar: AppBar(title: Text('Cart')),
 
-                      initialItemCount: cartItemsUnique.length,
-                      itemBuilder: (context, index, animation) {
-                        final item = cartItemsUnique[index];
-                        return _buildCartItem(item, index, animation);
-                      },
+        body:
+            cartItemsUnique.isEmpty
+                ? Center(child: Text('Your cart is empty'))
+                : Column(
+                  children: [
+                    Expanded(
+                      child: AnimatedList(
+                        key: _listKey,
+
+                        initialItemCount: cartItemsUnique.length,
+                        itemBuilder: (context, index, animation) {
+                          final item = cartItemsUnique[index];
+                          return _buildCartItem(item, index, animation);
+                        },
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
 
-                    child: Column(
-                      children: [
-                        Text(
-                          "Total Price: \$${getTotalPrice().toStringAsFixed(2)}",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            onPressed: () {
-                              ConfirmDialog.showAlertDialgoue(
-                                context,
-                                title: "Continue Checkout",
-                                content: "Do you want to checkout?",
-                                onPressed: () async {
-                                  await _checkout();
-                                },
-                              );
-                            },
-                            child: Text(
-                              'checkout',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
+                      child: Column(
+                        children: [
+                          Text(
+                            "Total Price: \$${getTotalPrice().toStringAsFixed(2)}",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        ),
-                      ],
+
+                          const SizedBox(height: 10),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () {
+                                ConfirmDialog.showAlertDialgoue(
+                                  context,
+                                  title: "Continue Checkout",
+                                  content: "Do you want to checkout?",
+                                  onPressed: () async {
+                                    await _checkout();
+                                  },
+                                );
+                              },
+                              child: Text(
+                                'checkout',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+      ),
     );
   }
 

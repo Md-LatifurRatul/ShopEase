@@ -114,13 +114,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void openCart() async {
-    await Navigator.push(
+    final updatedCart = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CartScreen(cartItems: _cartItems),
       ),
     );
-    setState(() {});
+    if (updatedCart != null) {
+      setState(() {
+        _cartItems.clear();
+        _cartItems.addAll(updatedCart);
+      });
+    }
   }
 
   Future<void> _signOut() async {
