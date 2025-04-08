@@ -32,6 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   Timer? _timer;
   final _firebaseAuthService = FirebaseAuthService();
+  String? selectedCategory;
+  double minPrice = 0;
+  double maxPrice = 1000;
+  double selectedRating = 0;
 
   @override
   void initState() {
@@ -109,15 +113,14 @@ class _HomeScreenState extends State<HomeScreen> {
     ToastMeesage.showToastMessage(context, "${product.title} added to cart!");
   }
 
-  void openCart() {
-    setState(() {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CartScreen(cartItems: _cartItems),
-        ),
-      );
-    });
+  void openCart() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CartScreen(cartItems: _cartItems),
+      ),
+    );
+    setState(() {});
   }
 
   Future<void> _signOut() async {
@@ -320,11 +323,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showFilterModelSheet() {
-    String? selectedCategory;
-    double minPrice = 0;
-    double maxPrice = 1000;
-    double selectedRating = 0;
-
     showModalBottomSheet(
       context: context,
       builder: (context) {
