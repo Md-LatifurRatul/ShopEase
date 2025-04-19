@@ -50,17 +50,30 @@ class WishlistService {
         .toList();
   }
 
-  static Future<bool> isInWishList(String productId) async {
+  static Stream<bool> isInWishListStream(String productId) {
     final user = _auth.currentUser;
-    if (user == null) return false;
+    if (user == null) return Stream.value(false);
 
-    final doc =
-        await _firestore
-            .collection('users')
-            .doc(user.uid)
-            .collection("wishlist")
-            .doc(productId)
-            .get();
-    return doc.exists;
+    return _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection("wishlist")
+        .doc(productId)
+        .snapshots()
+        .map((doc) => doc.exists);
+  }
+
+  static Stream<QuerySnapshot<Map<String, dynamic>>> wishListStream() {
+    final user = _auth.currentUser;
+
+    if (user == null) {
+      return const Stream.empty();
+    }
+
+    return _firestore
+        .collection("users")
+        .doc(user.uid)
+        .collection("wishlist")
+        .snapshots();
   }
 }
