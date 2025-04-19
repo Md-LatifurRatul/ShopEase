@@ -101,8 +101,8 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
 
               SizedBox(height: 40),
-              Text("Forgot Password?", style: TextStyle(color: Colors.grey)),
 
+              // Text("Forgot Password?", style: TextStyle(color: Colors.grey)),
               SizedBox(height: 40),
               CustomAuthElevatedButton(
                 buttonName: "Login",

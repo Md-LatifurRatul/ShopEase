@@ -1,9 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/services/wishlist_service.dart';
 import 'package:e_commerce_project/widgets/build_stars_rating.dart';
 import 'package:flutter/material.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   const ProductCard({
     super.key,
     required this.product,
@@ -12,7 +13,42 @@ class ProductCard extends StatelessWidget {
 
   final ProductsItem product;
 
-  final Function(ProductsItem) onAddToCart;
+  final Function(ProductsItem)? onAddToCart;
+
+  @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  bool isWishListed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // checkWishList();
+  }
+
+  void checkWishList() async {
+    final exists = await WishlistService.isInWishList(
+      widget.product.id.toString(),
+    );
+
+    setState(() {
+      isWishListed = exists;
+    });
+  }
+
+  void toggleWishList() async {
+    if (isWishListed) {
+      await WishlistService.removeFromWishList(widget.product.id.toString());
+    } else {
+      await WishlistService.addToWishList(widget.product);
+    }
+
+    setState(() {
+      isWishListed = !isWishListed;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,20 +58,42 @@ class ProductCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
 
-              child: CachedNetworkImage(
-                imageUrl: product.thumbnail!,
-                placeholder:
-                    (context, url) =>
-                        Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => Icon(Icons.error),
-                width: double.infinity,
-                fit: BoxFit.cover,
+                child: CachedNetworkImage(
+                  imageUrl: widget.product.thumbnail!,
+                  placeholder:
+                      (context, url) =>
+                          Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
+
+              Positioned(
+                top: 8,
+                right: 8,
+
+                child: GestureDetector(
+                  onTap: () {
+                    // toggleWishList();
+                  },
+
+                  child: Icon(
+                    // isWishListed ? Icons.favorite: Icons.favorite_border,
+                    // color: isWishListed ? Colors.red : Colors.grey,
+                    // size: 28,
+                    Icons.favorite,
+                    color: Colors.red,
+                    size: 28,
+                  ),
+                ),
+              ),
+            ],
           ),
 
           Padding(
@@ -45,7 +103,7 @@ class ProductCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  product.title!,
+                  widget.product.title!,
                   style: TextStyle(fontWeight: FontWeight.bold),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -56,7 +114,7 @@ class ProductCard extends StatelessWidget {
 
                   children: [
                     Text(
-                      "\$${product.price}",
+                      "\$${widget.product.price}",
                       style: TextStyle(
                         color: Colors.green,
                         fontWeight: FontWeight.bold,
@@ -65,7 +123,7 @@ class ProductCard extends StatelessWidget {
 
                     Row(
                       children: BuildStarsRating.buildStarRating(
-                        product.rating ?? 0,
+                        widget.product.rating ?? 0,
                         15,
                       ),
                     ),
@@ -73,7 +131,9 @@ class ProductCard extends StatelessWidget {
                     Expanded(
                       child: IconButton(
                         onPressed: () {
-                          onAddToCart(product);
+                          if (widget.onAddToCart != null) {
+                            widget.onAddToCart!(widget.product);
+                          }
                         },
                         icon: Icon(
                           Icons.add_shopping_cart,

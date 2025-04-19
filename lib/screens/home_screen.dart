@@ -7,6 +7,7 @@ import 'package:e_commerce_project/model/products_item.dart';
 import 'package:e_commerce_project/screens/authentication/login_screen.dart';
 import 'package:e_commerce_project/screens/cart_screen.dart';
 import 'package:e_commerce_project/screens/product_details_screen.dart';
+import 'package:e_commerce_project/screens/wishlist_screen.dart';
 import 'package:e_commerce_project/services/api_services.dart';
 import 'package:e_commerce_project/utils/banner_image_url.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
@@ -36,6 +37,8 @@ class _HomeScreenState extends State<HomeScreen> {
   double minPrice = 0;
   double maxPrice = 1000;
   double selectedRating = 0;
+
+  final List<ProductsItem> _wishListItems = [];
 
   @override
   void initState() {
@@ -155,6 +158,44 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('E-Commerce App'),
         backgroundColor: Colors.deepPurple,
         actions: [
+          Stack(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) =>
+                              WishlistScreen(wishListItem: _wishListItems),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.favorite_border, color: Colors.white),
+              ),
+
+              if (_wishListItems.isNotEmpty)
+                Positioned(
+                  right: 4,
+                  top: 4,
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: BoxConstraints(minWidth: 20, minHeight: 20),
+                    child: Text(
+                      "${_wishListItems.length}",
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+
           Stack(
             children: [
               IconButton(
