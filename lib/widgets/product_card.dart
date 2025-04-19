@@ -9,54 +9,56 @@ class ProductCard extends StatefulWidget {
     super.key,
     required this.product,
     required this.onAddToCart,
+    required this.addToCartIcon,
   });
 
   final ProductsItem product;
 
   final Function(ProductsItem)? onAddToCart;
+  final bool addToCartIcon;
 
   @override
   State<ProductCard> createState() => _ProductCardState();
 }
 
 class _ProductCardState extends State<ProductCard> {
-  bool isWishListed = false;
+  // bool isWishListed = false;
 
-  @override
-  void initState() {
-    super.initState();
-    // checkWishList();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // checkWishList();
+  // }
 
-  void checkWishList() async {
-    final exists = await WishlistService.isInWishList(
-      widget.product.id.toString(),
-    );
+  // void checkWishList() async {
+  //   final exists = await WishlistService.isInWishList(
+  //     widget.product.id.toString(),
+  //   );
 
-    setState(() {
-      isWishListed = exists;
-    });
-  }
+  //   setState(() {
+  //     isWishListed = exists;
+  //   });
+  // }
 
-  void toggleWishList() async {
-    if (isWishListed) {
-      await WishlistService.removeFromWishList(widget.product.id.toString());
-    } else {
-      await WishlistService.addToWishList(widget.product);
-    }
+  // void toggleWishList() async {
+  //   if (isWishListed) {
+  //     await WishlistService.removeFromWishList(widget.product.id.toString());
+  //   } else {
+  //     await WishlistService.addToWishList(widget.product);
+  //   }
 
-    setState(() {
-      isWishListed = !isWishListed;
-    });
-  }
+  //   setState(() {
+  //     isWishListed = !isWishListed;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Wrap(
+        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Stack(
             children: [
@@ -74,24 +76,35 @@ class _ProductCardState extends State<ProductCard> {
                 ),
               ),
 
-              Positioned(
-                top: 8,
-                right: 8,
-
-                child: GestureDetector(
-                  onTap: () {
-                    // toggleWishList();
-                  },
-
-                  child: Icon(
-                    // isWishListed ? Icons.favorite: Icons.favorite_border,
-                    // color: isWishListed ? Colors.red : Colors.grey,
-                    // size: 28,
-                    Icons.favorite,
-                    color: Colors.red,
-                    size: 28,
-                  ),
+              StreamBuilder<bool>(
+                stream: WishlistService.isInWishListStream(
+                  widget.product.id.toString(),
                 ),
+                builder: (context, snapshot) {
+                  final isWishListed = snapshot.data ?? false;
+                  return Positioned(
+                    top: 8,
+                    right: 8,
+
+                    child: GestureDetector(
+                      onTap: () {
+                        if (isWishListed) {
+                          WishlistService.removeFromWishList(
+                            widget.product.id.toString(),
+                          );
+                        } else {
+                          WishlistService.addToWishList(widget.product);
+                        }
+                      },
+
+                      child: Icon(
+                        isWishListed ? Icons.favorite : Icons.favorite_border,
+                        color: isWishListed ? Colors.red : Colors.grey,
+                        size: 28,
+                      ),
+                    ),
+                  );
+                },
               ),
             ],
           ),

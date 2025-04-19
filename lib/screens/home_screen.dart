@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_project/controllers/services/auth_exception.dart';
 import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
 import 'package:e_commerce_project/model/product_model.dart';
@@ -9,6 +10,7 @@ import 'package:e_commerce_project/screens/cart_screen.dart';
 import 'package:e_commerce_project/screens/product_details_screen.dart';
 import 'package:e_commerce_project/screens/wishlist_screen.dart';
 import 'package:e_commerce_project/services/api_services.dart';
+import 'package:e_commerce_project/services/wishlist_service.dart';
 import 'package:e_commerce_project/utils/banner_image_url.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
 import 'package:e_commerce_project/widgets/product_card.dart';
@@ -37,8 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
   double minPrice = 0;
   double maxPrice = 1000;
   double selectedRating = 0;
-
-  final List<ProductsItem> _wishListItems = [];
 
   @override
   void initState() {
@@ -158,76 +158,9 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('E-Commerce App'),
         backgroundColor: Colors.deepPurple,
         actions: [
-          Stack(
-            children: [
-              IconButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              WishlistScreen(wishListItem: _wishListItems),
-                    ),
-                  );
-                },
-                icon: Icon(Icons.favorite_border, color: Colors.white),
-              ),
+          _buildAppBarWishList(context),
 
-              if (_wishListItems.isNotEmpty)
-                Positioned(
-                  right: 4,
-                  top: 4,
-                  child: Container(
-                    padding: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: BoxConstraints(minWidth: 20, minHeight: 20),
-                    child: Text(
-                      "${_wishListItems.length}",
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-
-          Stack(
-            children: [
-              IconButton(
-                onPressed: openCart,
-
-                icon: Icon(Icons.shopping_cart, color: Colors.white, size: 35),
-              ),
-
-              if (_cartItems.isNotEmpty)
-                Positioned(
-                  top: 4,
-                  right: 4,
-
-                  child: Container(
-                    padding: EdgeInsets.all(3),
-
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    constraints: BoxConstraints(minWidth: 20, minHeight: 20),
-                    child: Text(
-                      "${_cartItems.length}",
-
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          ),
+          _buildAppBarCart(),
           const SizedBox(width: 10),
           IconButton(
             style: IconButton.styleFrom(backgroundColor: Colors.yellow),
@@ -324,6 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: ProductCard(
                           product: product,
                           onAddToCart: addToCart,
+                          addToCartIcon: true,
                         ),
                       );
                     },
@@ -334,6 +268,88 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAppBarWishList(BuildContext context) {
+    return Stack(
+      children: [
+        IconButton(
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => WishlistScreen()),
+            );
+            setState(() {});
+          },
+          icon: Icon(Icons.favorite_border, color: Colors.white, size: 35),
+        ),
+
+        StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: WishlistService.wishListStream(),
+
+          builder: (context, snapshot) {
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return Container();
+            }
+
+            final wishListCount = snapshot.data!.docs.length;
+
+            return Positioned(
+              right: 4,
+              top: 4,
+              child: Container(
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                constraints: BoxConstraints(minWidth: 20, minHeight: 20),
+                child: Text(
+                  "$wishListCount",
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAppBarCart() {
+    return Stack(
+      children: [
+        IconButton(
+          onPressed: openCart,
+
+          icon: Icon(Icons.shopping_cart, color: Colors.white, size: 35),
+        ),
+
+        if (_cartItems.isNotEmpty)
+          Positioned(
+            top: 4,
+            right: 4,
+
+            child: Container(
+              padding: EdgeInsets.all(3),
+
+              decoration: BoxDecoration(
+                color: Colors.red,
+
+                borderRadius: BorderRadius.circular(10),
+              ),
+              constraints: BoxConstraints(minWidth: 20, minHeight: 20),
+              child: Text(
+                "${_cartItems.length}",
+
+                style: TextStyle(color: Colors.white, fontSize: 12),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
     );
   }
 
