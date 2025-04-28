@@ -13,6 +13,7 @@ import 'package:e_commerce_project/services/api_services.dart';
 import 'package:e_commerce_project/services/wishlist_service.dart';
 import 'package:e_commerce_project/utils/banner_image_url.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
+import 'package:e_commerce_project/widgets/home_app_bar_drawer.dart';
 import 'package:e_commerce_project/widgets/product_card.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
 import 'package:flutter/material.dart';
@@ -154,6 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: HomeAppBarDrawer(cartItem: _cartItems, signOut: () => _signOut()),
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('E-Commerce App'),

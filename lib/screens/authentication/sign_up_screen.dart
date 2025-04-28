@@ -35,6 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _emailNameController.text.trim(),
         _passwordController.text.trim(),
       );
+      await user!.updateDisplayName(_userNameController.text);
       print(user);
       await _firebaseAuthService.signOut();
       if (mounted) {
