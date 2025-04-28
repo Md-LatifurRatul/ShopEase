@@ -154,6 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('E-Commerce App'),
         backgroundColor: Colors.deepPurple,
@@ -165,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             style: IconButton.styleFrom(backgroundColor: Colors.yellow),
             onPressed: () {
-              ConfirmDialog.showAlertDialgoue(
+              ConfirmDialog.showAlertDialogue(
                 context,
                 title: "Sign Out",
                 content: "Are you sure you want to log-out?",

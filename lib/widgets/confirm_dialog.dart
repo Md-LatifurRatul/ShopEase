@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ConfirmDialog {
-  static void showAlertDialgoue(
+  static void showAlertDialogue(
     BuildContext context, {
     required String title,
     required String content,
