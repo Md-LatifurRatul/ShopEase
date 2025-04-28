@@ -153,7 +153,7 @@ class _CartScreenState extends State<CartScreen> {
                                 ),
                               ),
                               onPressed: () {
-                                ConfirmDialog.showAlertDialgoue(
+                                ConfirmDialog.showAlertDialogue(
                                   context,
                                   title: "Continue Checkout",
                                   content: "Do you want to checkout?",

@@ -37,7 +37,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       );
       return;
     } else {
-      ConfirmDialog.showAlertDialgoue(
+      ConfirmDialog.showAlertDialogue(
         context,
         title: 'Proceed To Payment',
         content: "Do you want confirm Order?",
