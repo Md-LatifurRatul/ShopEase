@@ -1,4 +1,4 @@
-class UserProfile {
+class UserProfileModel {
   final String uid;
   final String email;
   final String? fullName;
@@ -6,7 +6,7 @@ class UserProfile {
   final String? country;
   final String? profileImageUrl;
 
-  UserProfile({
+  UserProfileModel({
     required this.uid,
     required this.email,
     this.fullName,
@@ -15,8 +15,8 @@ class UserProfile {
     this.profileImageUrl,
   });
 
-  factory UserProfile.fromJson(Map<String, dynamic> json) {
-    return UserProfile(
+  factory UserProfileModel.fromJson(Map<String, dynamic> json) {
+    return UserProfileModel(
       uid: json["uid"],
       email: json["email"],
       fullName: json["fullName"],
@@ -37,5 +37,22 @@ class UserProfile {
       'country': country,
       'profileImageUrl': profileImageUrl,
     };
+  }
+
+  UserProfileModel copyWith({
+    String? fullName,
+    String? email,
+    String? country,
+    String? phoneNumber,
+    String? photoUrl,
+  }) {
+    return UserProfileModel(
+      uid: uid,
+      fullName: fullName ?? this.fullName,
+      email: email ?? this.email,
+      country: country ?? this.country,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      profileImageUrl: photoUrl ?? profileImageUrl,
+    );
   }
 }
