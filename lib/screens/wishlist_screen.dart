@@ -1,5 +1,5 @@
+import 'package:e_commerce_project/controllers/services/wishlist_service.dart';
 import 'package:e_commerce_project/model/products_item.dart';
-import 'package:e_commerce_project/services/wishlist_service.dart';
 import 'package:e_commerce_project/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 
