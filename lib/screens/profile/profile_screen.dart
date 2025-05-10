@@ -23,6 +23,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUserProfile() async {
+    setState(() {
+      _isLoading = true;
+    });
     final user = _firebaseUser.currentUser;
     if (user != null) {
       final profile = await UserProfileService.fetchUserProfile();
