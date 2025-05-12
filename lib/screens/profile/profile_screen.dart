@@ -2,6 +2,7 @@ import 'package:e_commerce_project/controllers/services/firebase_auth_service.da
 import 'package:e_commerce_project/controllers/services/user_profile_service.dart';
 import 'package:e_commerce_project/model/user_profile_model.dart';
 import 'package:e_commerce_project/screens/profile/complete_profile_screen.dart';
+import 'package:e_commerce_project/screens/profile/edit_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -57,18 +58,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     const SizedBox(height: 20),
                     Text(
-                      _firebaseUser.currentUser?.email ?? "",
+                      _firebaseUser.currentUser?.email ?? "No email",
                       style: TextStyle(fontSize: 16),
                     ),
 
                     const SizedBox(height: 10),
 
-                    _userProfile?.fullName != null
+                    _userProfile != null
                         ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("Name: ${_userProfile!.fullName}"),
-                            Text("Name: ${_userProfile!.phoneNumber}"),
-                            Text("Name: ${_userProfile!.country}"),
+                            if (_userProfile!.fullName != null)
+                              Text("Name: ${_userProfile!.fullName}"),
+
+                            if (_userProfile!.phoneNumber != null)
+                              Text("Name: ${_userProfile!.phoneNumber}"),
+
+                            if (_userProfile!.country != null)
+                              Text("Name: ${_userProfile!.country}"),
                           ],
                         )
                         : const Text(
@@ -114,15 +121,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               _userProfile == null
                                   ? null
                                   : () async {
-                                    // await Navigator.push(
-                                    //   context,
-                                    //   MaterialPageRoute(
-                                    //     builder:
-                                    //         (_) => EditProfileScreen(
-                                    //           userProfile: _userProfile!,
-                                    //         ),
-                                    //   ),
-                                    // );
+                                    final updated = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (_) => EditProfileScreen(
+                                              userProfile: _userProfile!,
+                                            ),
+                                      ),
+                                    );
+                                    if (updated == true) {
+                                      _loadUserProfile();
+                                    }
                                     _loadUserProfile(); // Refresh after editing
                                   },
                         ),
@@ -135,7 +145,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfileImage() {
-    if (_userProfile?.profileImageUrl != null) {
+    if (_userProfile?.profileImageUrl != null &&
+        _userProfile!.profileImageUrl!.isNotEmpty) {
       return CircleAvatar(
         radius: 50,
         backgroundImage: NetworkImage(_userProfile!.profileImageUrl!),
