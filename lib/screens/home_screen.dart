@@ -156,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: HomeAppBarDrawer(cartItem: _cartItems, signOut: () => _signOut()),
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text('E-Commerce App'),
         backgroundColor: Colors.deepPurple,

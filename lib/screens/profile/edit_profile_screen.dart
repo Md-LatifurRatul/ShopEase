@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
+import 'package:e_commerce_project/controllers/services/user_profile_service.dart';
 import 'package:e_commerce_project/model/user_profile_model.dart';
+import 'package:e_commerce_project/widgets/toast_meesage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -19,6 +22,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _phoneController = TextEditingController();
   File? _newImage;
   bool _isSaving = false;
+  final _firebaseUser = FirebaseAuthService();
 
   @override
   void initState() {
@@ -41,7 +45,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Future<void> _saveProfile() async {}
+  Future<void> _saveProfile() async {
+    final user = _firebaseUser.currentUser;
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isSaving = true);
+
+    try {
+      String? imageUrl = widget.userProfile.profileImageUrl;
+
+      if (_newImage != null) {
+        final bytes = await _newImage!.readAsBytes();
+        imageUrl = await UserProfileService.uploadProfileImage(bytes);
+      }
+
+      final updatedProfile = UserProfileModel(
+        uid: widget.userProfile.uid,
+        fullName: _fullNameController.text.trim(),
+        country: _countryController.text.trim(),
+        phoneNumber: _phoneController.text.trim(),
+        profileImageUrl: imageUrl,
+
+        email: user!.email!,
+      );
+
+      await UserProfileService.saveUserProfile(updatedProfile);
+
+      if (mounted) {
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ToastMeesage.showToastMessage(context, 'Failed to update profile');
+    } finally {
+      setState(() => _isSaving = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
