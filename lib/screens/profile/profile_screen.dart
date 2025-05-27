@@ -3,6 +3,7 @@ import 'package:e_commerce_project/controllers/services/user_profile_service.dar
 import 'package:e_commerce_project/model/user_profile_model.dart';
 import 'package:e_commerce_project/screens/profile/complete_profile_screen.dart';
 import 'package:e_commerce_project/screens/profile/edit_profile_screen.dart';
+import 'package:e_commerce_project/widgets/profile_info_card.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -57,29 +58,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildProfileImage(),
 
                     const SizedBox(height: 20),
-                    Text(
-                      _firebaseUser.currentUser?.email ?? "No email",
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    _buildEmailInfo(),
 
                     const SizedBox(height: 10),
 
                     _userProfile != null
-                        ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (_userProfile!.fullName != null)
-                              Text("Name: ${_userProfile!.fullName}"),
-
-                            if (_userProfile!.phoneNumber != null)
-                              Text("Name: ${_userProfile!.phoneNumber}"),
-
-                            if (_userProfile!.country != null)
-                              Text("Name: ${_userProfile!.country}"),
-                          ],
-                        )
-                        : const Text(
-                          "Complete your profile to see more info...",
+                        ? PrfileInfoCard(userProfile: _userProfile)
+                        : Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            'complete your profile to see details here.',
+                            style: TextStyle(color: Colors.grey[600]),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
 
                     const Spacer(),
@@ -110,13 +101,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal,
+                            backgroundColor: Colors.blueAccent,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           icon: const Icon(Icons.edit),
-                          label: const Text("Edit Profile"),
+                          label: const Text(
+                            "Edit Profile",
+                            style: TextStyle(color: Colors.black),
+                          ),
                           onPressed:
                               _userProfile == null
                                   ? null
@@ -141,6 +135,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
               ),
+    );
+  }
+
+  Widget _buildEmailInfo() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.deepPurple.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.deepPurple.shade100),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.email_rounded, color: Colors.deepPurple),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _firebaseUser.currentUser?.email ?? "No email",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              Text(
+                'Email Address',
+                style: TextStyle(color: Colors.grey[600], fontSize: 13),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
