@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
 import 'package:e_commerce_project/controllers/services/user_profile_service.dart';
 import 'package:e_commerce_project/model/user_profile_model.dart';
+import 'package:e_commerce_project/widgets/country_selector_field.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,7 +20,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _fullNameController = TextEditingController();
-  final _countryController = TextEditingController();
+  String? _selectedCountry;
   final _phoneController = TextEditingController();
   File? _selectedImage;
   bool _isLoading = false;
@@ -68,7 +69,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
       fullName: _fullNameController.text.trim(),
 
       email: user.email!,
-      country: _countryController.text.trim(),
+      country: _selectedCountry ?? '',
       phoneNumber: _phoneController.text.trim(),
       profileImageUrl: imageUrl,
     );
@@ -112,7 +113,13 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               SizedBox(height: 20),
               TextFormField(
                 controller: _fullNameController,
-                decoration: InputDecoration(labelText: 'Full Name'),
+
+                decoration: InputDecoration(
+                  labelText: 'Full Name',
+
+                  suffixIcon: Icon(Icons.person),
+                ),
+
                 validator:
                     (value) =>
                         value == null || value.isEmpty
@@ -120,19 +127,24 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
                             : null,
               ),
               SizedBox(height: 20),
-              TextFormField(
-                controller: _countryController,
-                decoration: InputDecoration(labelText: 'Country'),
-                validator:
-                    (value) =>
-                        value == null || value.isEmpty
-                            ? "Enter your country"
-                            : null,
+
+              CountrySelectorField(
+                selectedCountry: _selectedCountry,
+                label: "Country",
+                onCountrySelected: (country) {
+                  setState(() {
+                    _selectedCountry = country;
+                  });
+                },
               ),
+
               SizedBox(height: 10),
               TextFormField(
                 controller: _phoneController,
-                decoration: InputDecoration(labelText: 'Phone Number'),
+                decoration: InputDecoration(
+                  labelText: 'Phone Number',
+                  suffixIcon: Icon(Icons.phone),
+                ),
                 validator:
                     (value) =>
                         value == null || value.isEmpty

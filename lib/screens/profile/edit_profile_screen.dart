@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
 import 'package:e_commerce_project/controllers/services/user_profile_service.dart';
 import 'package:e_commerce_project/model/user_profile_model.dart';
+import 'package:e_commerce_project/widgets/country_selector_field.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,7 +19,7 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
+  String? _selectedCountry;
   final TextEditingController _phoneController = TextEditingController();
   File? _newImage;
   bool _isSaving = false;
@@ -29,7 +30,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     _fullNameController.text = widget.userProfile.fullName ?? "";
 
-    _countryController.text = widget.userProfile.country ?? '';
+    _selectedCountry = widget.userProfile.country ?? '';
     _phoneController.text = widget.userProfile.phoneNumber ?? '';
   }
 
@@ -62,7 +63,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final updatedProfile = UserProfileModel(
         uid: widget.userProfile.uid,
         fullName: _fullNameController.text.trim(),
-        country: _countryController.text.trim(),
+        country: _selectedCountry,
         phoneNumber: _phoneController.text.trim(),
         profileImageUrl: imageUrl,
 
@@ -121,7 +122,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                       TextFormField(
                         controller: _fullNameController,
-                        decoration: const InputDecoration(labelText: 'Name'),
+                        decoration: const InputDecoration(
+                          labelText: 'Name',
+
+                          suffixIcon: Icon(Icons.person_outline),
+                        ),
                         validator:
                             (value) =>
                                 value == null || value.isEmpty
@@ -129,21 +134,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     : null,
                       ),
 
-                      TextFormField(
-                        controller: _countryController,
-                        decoration: const InputDecoration(labelText: 'Country'),
-                        validator:
-                            (value) =>
-                                value == null || value.isEmpty
-                                    ? "Enter your country"
-                                    : null,
+                      CountrySelectorField(
+                        selectedCountry: _selectedCountry,
+                        label: "Country",
+                        onCountrySelected: (country) {
+                          setState(() {
+                            _selectedCountry = country;
+                          });
+                        },
                       ),
+
                       const SizedBox(height: 20),
 
                       TextFormField(
                         controller: _phoneController,
                         decoration: const InputDecoration(
                           labelText: 'Phone Number',
+                          suffixIcon: Icon(Icons.phone),
                         ),
                         validator:
                             (value) =>
@@ -157,9 +164,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: ElevatedButton(
                           onPressed: _saveProfile,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
+                            backgroundColor: Colors.teal,
                           ),
-                          child: const Text("Save Changes"),
+                          child: const Text(
+                            "Save Changes",
+                            style: TextStyle(color: Colors.black),
+                          ),
                         ),
                       ),
                     ],
