@@ -36,6 +36,7 @@ dependencies:
   supabase_flutter: ^2.9.0
   image_picker: ^1.1.2
   country_picker: ^2.0.27
+  flutter_stripe: ^11.5.0
 
 dev_dependencies:
   flutter_test:

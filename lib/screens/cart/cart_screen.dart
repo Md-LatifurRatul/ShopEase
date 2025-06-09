@@ -1,5 +1,5 @@
 import 'package:e_commerce_project/model/products_item.dart';
-import 'package:e_commerce_project/screens/checkout_screen.dart';
+import 'package:e_commerce_project/screens/payment/checkout_screen.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
 import 'package:flutter/material.dart';
