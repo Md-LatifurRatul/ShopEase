@@ -1,8 +1,8 @@
 import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
 import 'package:e_commerce_project/model/products_item.dart';
-import 'package:e_commerce_project/screens/cart_screen.dart';
+import 'package:e_commerce_project/screens/cart/cart_screen.dart';
 import 'package:e_commerce_project/screens/profile/profile_screen.dart';
-import 'package:e_commerce_project/screens/wishlist_screen.dart';
+import 'package:e_commerce_project/screens/wishlist/wishlist_screen.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
 import 'package:flutter/material.dart';
 

@@ -1,4 +1,4 @@
-import 'package:e_commerce_project/screens/splash_screen.dart';
+import 'package:e_commerce_project/screens/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 class ECommerceApp extends StatelessWidget {

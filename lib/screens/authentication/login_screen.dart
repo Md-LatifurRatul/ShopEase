@@ -1,7 +1,7 @@
 import 'package:e_commerce_project/controllers/services/auth_exception.dart';
 import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
 import 'package:e_commerce_project/screens/authentication/sign_up_screen.dart';
-import 'package:e_commerce_project/screens/home_screen.dart';
+import 'package:e_commerce_project/screens/home/home_screen.dart';
 import 'package:e_commerce_project/widgets/custom_auth_elevated_button.dart';
 import 'package:e_commerce_project/widgets/login_header.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';

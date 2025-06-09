@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
 import 'package:e_commerce_project/screens/authentication/login_screen.dart';
-import 'package:e_commerce_project/screens/home_screen.dart';
+import 'package:e_commerce_project/screens/home/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
