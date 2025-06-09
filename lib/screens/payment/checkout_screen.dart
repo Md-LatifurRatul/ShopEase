@@ -1,4 +1,5 @@
 import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/screens/payment/stripe_payment_gatway.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final TextEditingController _phoneController = TextEditingController();
 
   final TextEditingController _addressController = TextEditingController();
+  List<Map<String, dynamic>> products = [];
 
   double getTotalPrice() {
     double total = 0.0;
@@ -29,6 +31,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return total;
   }
 
+  void paymentProducts() {
+    products =
+        widget.cartItems.entries.map((entry) {
+          final product = entry.key;
+          final quantity = entry.value;
+          return {
+            'name': product.title,
+            'price': product.price,
+            'quantity': quantity,
+          };
+        }).toList();
+  }
+
   void _confirmOrder() {
     if (_addressController.text.isEmpty || _phoneController.text.isEmpty) {
       ToastMeesage.showToastMessage(
@@ -36,7 +51,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         "Please enter address and phone number",
       );
       return;
-    } else {
+    }
+    if (_selectedPaymentMethod == "Stripe") {
       ConfirmDialog.showAlertDialogue(
         context,
         title: 'Proceed To Payment',
@@ -46,11 +62,45 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ToastMeesage.showToastMessage(context, "Order placed succesfully");
           Navigator.pop(context, true);
           // Todo: Payment Gateway Integration
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => PaymentGatway()),
-          // );
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => StripePaymentGateway(
+                    products:
+                        widget.cartItems.entries.map((entry) {
+                          final product = entry.key;
+                          final quantity = entry.value;
+                          return {
+                            'name': product.title,
+                            'price': product.price,
+                            'quantity': quantity,
+                          };
+                        }).toList(),
+                    amount: getTotalPrice(),
+                    address: _addressController.text,
+                    phone: _phoneController.text,
+                  ),
+            ),
+          );
         },
+      );
+    } else if (_selectedPaymentMethod == "Bkash") {
+      ToastMeesage.showToastMessage(context, "bKash payment coming soon!");
+    } else if (_selectedPaymentMethod == "Cash on Delivery") {
+      ConfirmDialog.showAlertDialogue(
+        context,
+        title: 'Confirm Order',
+        content: "Place order with Cash on Delivery?",
+        onPressed: () {
+          ToastMeesage.showToastMessage(context, "Order placed successfully");
+          Navigator.pop(context, true);
+        },
+      );
+    } else {
+      ToastMeesage.showToastMessage(
+        context,
+        "Please select a valid payment method.",
       );
     }
   }
@@ -95,7 +145,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               value: _selectedPaymentMethod,
 
               items:
-                  ["Cash on Delivery", "Credit Card", "Bkash", "Nagad"]
+                  ["Cash on Delivery", "Stripe", "Bkash"]
                       .map(
                         (method) => DropdownMenuItem(
                           value: method,
