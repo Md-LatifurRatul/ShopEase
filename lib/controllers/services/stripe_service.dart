@@ -9,13 +9,16 @@ class StripeService {
 
   static final StripeService instance = StripeService._();
 
-  Future<void> makePayment() async {
+  Future<bool> makePayment(double amount) async {
     try {
-      String? paymentIntentClientSecret = await _createPaymentIntent(10, "usd");
+      final paymentIntentClientSecret = await _createPaymentIntent(
+        amount,
+        "usd",
+      );
       // log(result.toString());
       print(paymentIntentClientSecret);
 
-      if (paymentIntentClientSecret == null) return;
+      if (paymentIntentClientSecret == null) return false;
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: paymentIntentClientSecret,
@@ -23,20 +26,23 @@ class StripeService {
         ),
       );
       await _proceedPayment();
+      return true;
     } catch (e) {
       log(e.toString());
+      return false;
     }
   }
 
-  Future<String?> _createPaymentIntent(int amount, String currency) async {
+  Future<String?> _createPaymentIntent(double amount, String currency) async {
     try {
-      Dio dio = Dio();
+      final Dio dio = Dio();
       Map<String, dynamic> data = {
         "amount": _calculateAmount(amount),
         "currency": currency,
+        'payment_method_types[]': 'card',
       };
 
-      var response = await dio.post(
+      final response = await dio.post(
         ApiUrl.createPaymentIntentUrl,
         data: data,
 
@@ -50,11 +56,7 @@ class StripeService {
       );
       print(response);
 
-      if (response.data != null) {
-        print(response.data);
-        return response.data["client_secret"];
-      }
-      return null;
+      return response.data["client_secret"];
     } catch (e) {
       log(e.toString());
     }
@@ -69,8 +71,7 @@ class StripeService {
     }
   }
 
-  String _calculateAmount(int amount) {
-    final calcAmount = amount * 100;
-    return calcAmount.toString();
+  String _calculateAmount(double amount) {
+    return (amount * 100).toInt().toString();
   }
 }

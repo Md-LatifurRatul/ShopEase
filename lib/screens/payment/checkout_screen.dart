@@ -19,6 +19,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final TextEditingController _phoneController = TextEditingController();
 
   final TextEditingController _addressController = TextEditingController();
+  List<Map<String, dynamic>> products = [];
 
   double getTotalPrice() {
     double total = 0.0;
@@ -28,6 +29,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     });
 
     return total;
+  }
+
+  void paymentProducts() {
+    products =
+        widget.cartItems.entries.map((entry) {
+          final product = entry.key;
+          final quantity = entry.value;
+          return {
+            'name': product.title,
+            'price': product.price,
+            'quantity': quantity,
+          };
+        }).toList();
   }
 
   void _confirmOrder() {
@@ -50,7 +64,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           // Todo: Payment Gateway Integration
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => StripePaymentGatway()),
+            MaterialPageRoute(
+              builder:
+                  (context) => StripePaymentGateway(
+                    products:
+                        widget.cartItems.entries.map((entry) {
+                          final product = entry.key;
+                          final quantity = entry.value;
+                          return {
+                            'name': product.title,
+                            'price': product.price,
+                            'quantity': quantity,
+                          };
+                        }).toList(),
+                    amount: getTotalPrice(),
+                    address: _addressController.text,
+                    phone: _phoneController.text,
+                  ),
+            ),
           );
         },
       );
