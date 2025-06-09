@@ -3,6 +3,7 @@ import 'package:e_commerce_project/firebase_options.dart';
 import 'package:e_commerce_project/services/utils/api_url.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
@@ -14,6 +15,7 @@ Future<void> main() async {
     url: ApiUrl.supbaseUrl,
     anonKey: ApiUrl.supabaseKey,
   );
+  Stripe.publishableKey = ApiUrl.stripePublishableKey;
 
   runApp(const ECommerceApp());
 }

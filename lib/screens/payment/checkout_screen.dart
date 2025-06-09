@@ -1,4 +1,5 @@
 import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/screens/payment/stripe_payment_gatway.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         "Please enter address and phone number",
       );
       return;
-    } else {
+    }
+    if (_selectedPaymentMethod == "Stripe") {
       ConfirmDialog.showAlertDialogue(
         context,
         title: 'Proceed To Payment',
@@ -46,11 +48,28 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ToastMeesage.showToastMessage(context, "Order placed succesfully");
           Navigator.pop(context, true);
           // Todo: Payment Gateway Integration
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => PaymentGatway()),
-          // );
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => StripePaymentGatway()),
+          );
         },
+      );
+    } else if (_selectedPaymentMethod == "Bkash") {
+      ToastMeesage.showToastMessage(context, "bKash payment coming soon!");
+    } else if (_selectedPaymentMethod == "Cash on Delivery") {
+      ConfirmDialog.showAlertDialogue(
+        context,
+        title: 'Confirm Order',
+        content: "Place order with Cash on Delivery?",
+        onPressed: () {
+          ToastMeesage.showToastMessage(context, "Order placed successfully");
+          Navigator.pop(context, true);
+        },
+      );
+    } else {
+      ToastMeesage.showToastMessage(
+        context,
+        "Please select a valid payment method.",
       );
     }
   }
@@ -95,7 +114,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               value: _selectedPaymentMethod,
 
               items:
-                  ["Cash on Delivery", "Credit Card", "Bkash", "Nagad"]
+                  ["Cash on Delivery", "Stripe", "Bkash"]
                       .map(
                         (method) => DropdownMenuItem(
                           value: method,

@@ -90,6 +90,7 @@ class _CartScreenState extends State<CartScreen> {
         builder: (context) => CheckoutScreen(cartItems: cartQuantity),
       ),
     );
+    Navigator.pop(context);
 
     if (orderPlaced == true) {
       setState(() {
