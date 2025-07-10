@@ -5,7 +5,7 @@ import 'package:e_commerce_project/controllers/services/api_services.dart';
 import 'package:e_commerce_project/controllers/services/auth_exception.dart';
 import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
 import 'package:e_commerce_project/controllers/services/wishlist_service.dart';
-import 'package:e_commerce_project/model/product_model.dart';
+import 'package:e_commerce_project/model/product_model_dummy.dart';
 import 'package:e_commerce_project/model/products_item.dart';
 import 'package:e_commerce_project/screens/authentication/login_screen.dart';
 import 'package:e_commerce_project/screens/cart/cart_screen.dart';
@@ -26,7 +26,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<ProductModel> futureProducts;
+  late Future<ProductModelDummy> futureProducts;
   List<ProductsItem> _products = [];
   final List<ProductsItem> _cartItems = [];
   List<ProductsItem> _filteredProducts = [];
@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    futureProducts = ApiServices().fetchProudcts();
+    futureProducts = ApiServices().fetchProudctsDummy();
     _bannerController = PageController(viewportFraction: 0.9, initialPage: 0);
 
     _startAutoSlide();
@@ -225,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           SizedBox(height: 10),
           Expanded(
-            child: FutureBuilder<ProductModel>(
+            child: FutureBuilder<ProductModelDummy>(
               future: futureProducts,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {

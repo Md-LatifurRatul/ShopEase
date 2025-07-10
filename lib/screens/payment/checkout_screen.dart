@@ -85,9 +85,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           );
         },
       );
-    } else if (_selectedPaymentMethod == "Bkash") {
-      ToastMeesage.showToastMessage(context, "bKash payment coming soon!");
-    } else if (_selectedPaymentMethod == "Cash on Delivery") {
+      // } else if (_selectedPaymentMethod == "Bkash") {
+      //   ToastMeesage.showToastMessage(context, "bKash payment coming soon!");
+      // } else if (_selectedPaymentMethod == "Cash on Delivery") {
       ConfirmDialog.showAlertDialogue(
         context,
         title: 'Confirm Order',

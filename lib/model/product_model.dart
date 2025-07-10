@@ -1,33 +1,28 @@
-import 'package:e_commerce_project/model/products_item.dart';
-
 class ProductModel {
-  List<ProductsItem>? products;
-  int? total;
-  int? skip;
-  int? limit;
+  final String id;
+  final String name;
+  final double price;
+  final double rating;
+  final String description;
+  final String imageUrl;
 
-  ProductModel({this.products, this.total, this.skip, this.limit});
+  ProductModel({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.rating,
+    required this.description,
+    required this.imageUrl,
+  });
 
-  ProductModel.fromJson(Map<String, dynamic> json) {
-    if (json['products'] != null) {
-      products = <ProductsItem>[];
-      json['products'].forEach((v) {
-        products!.add(ProductsItem.fromJson(v));
-      });
-    }
-    total = json['total'];
-    skip = json['skip'];
-    limit = json['limit'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (products != null) {
-      data['products'] = products!.map((v) => v.toJson()).toList();
-    }
-    data['total'] = total;
-    data['skip'] = skip;
-    data['limit'] = limit;
-    return data;
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    return ProductModel(
+      id: json['_id'],
+      name: json['name'],
+      price: (json['price'] as num).toDouble(),
+      rating: (json['rating'] as num).toDouble(),
+      description: json['description'],
+      imageUrl: json['imageUrl'],
+    );
   }
 }

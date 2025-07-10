@@ -1,5 +1,5 @@
-import 'package:e_commerce_project/model/meta.dart';
 import 'package:e_commerce_project/model/dimensions.dart';
+import 'package:e_commerce_project/model/meta.dart';
 import 'package:e_commerce_project/model/reviews.dart';
 
 class ProductsItem {
