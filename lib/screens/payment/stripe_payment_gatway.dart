@@ -1,5 +1,6 @@
 import 'package:e_commerce_project/controllers/services/order_service.dart';
 import 'package:e_commerce_project/controllers/services/stripe_service.dart';
+import 'package:e_commerce_project/screens/home/home_screen.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +45,11 @@ class StripePaymentGateway extends StatelessWidget {
                   context,
                   "Payment successful. Order placed!",
                 );
-                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                  (route) => false,
+                );
               } else {
                 ToastMeesage.showToastMessage(context, "Payment failed!");
               }
