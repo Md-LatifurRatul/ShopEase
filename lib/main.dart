@@ -1,9 +1,12 @@
+import 'package:e_commerce_project/controllers/banner/banner_provider.dart';
+import 'package:e_commerce_project/controllers/product/product_provider.dart';
 import 'package:e_commerce_project/e_commerce_app.dart';
 import 'package:e_commerce_project/firebase_options.dart';
 import 'package:e_commerce_project/services/utils/api_url.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
@@ -17,5 +20,16 @@ Future<void> main() async {
   );
   Stripe.publishableKey = ApiUrl.stripePublishableKey;
 
-  runApp(const ECommerceApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ProductProvider>(
+          create: (_) => ProductProvider(),
+        ),
+
+        ChangeNotifierProvider<BannerProvider>(create: (_) => BannerProvider()),
+      ],
+      child: const ECommerceApp(),
+    ),
+  );
 }
