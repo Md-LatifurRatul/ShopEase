@@ -1,4 +1,4 @@
-import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/model/product_model.dart';
 import 'package:e_commerce_project/screens/payment/checkout_screen.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key, required this.cartItems});
 
-  final List<ProductsItem> cartItems;
+  final List<ProductModel> cartItems;
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -20,8 +20,8 @@ class _CartScreenState extends State<CartScreen> {
   //   });
   // }
 
-  Map<ProductsItem, int> cartQuantity = {};
-  late List<ProductsItem> cartList;
+  Map<ProductModel, int> cartQuantity = {};
+  late List<ProductModel> cartList;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
   @override
@@ -45,13 +45,13 @@ class _CartScreenState extends State<CartScreen> {
     // }
   }
 
-  void _incrementItem(ProductsItem item) {
+  void _incrementItem(ProductModel item) {
     setState(() {
       cartQuantity[item] = cartQuantity[item]! + 1;
     });
   }
 
-  void _decrementItem(ProductsItem item, int index) {
+  void _decrementItem(ProductModel item, int index) {
     setState(() {
       if (cartQuantity.containsKey(item)) {
         if (cartQuantity[item]! > 1) {
@@ -73,7 +73,7 @@ class _CartScreenState extends State<CartScreen> {
   double getTotalPrice() {
     double total = 0.0;
     cartQuantity.forEach((item, quantity) {
-      total += (item.price! * quantity);
+      total += (item.price * quantity);
     });
     return total;
   }
@@ -182,7 +182,7 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildCartItem(
-    ProductsItem item,
+    ProductModel item,
     int index,
     Animation<double> animation,
   ) {
@@ -195,14 +195,14 @@ class _CartScreenState extends State<CartScreen> {
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: Image.network(
-              item.thumbnail ?? "",
+              item.name,
               width: 60,
               height: 60,
               fit: BoxFit.cover,
             ),
           ),
-          title: Text(item.title ?? ""),
-          subtitle: Text("\$${item.price?.toStringAsFixed(2) ?? "0.00"}"),
+          title: Text(item.name),
+          subtitle: Text("\$${item.price.toStringAsFixed(2)}"),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
 

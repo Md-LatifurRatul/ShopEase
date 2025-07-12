@@ -1,5 +1,5 @@
 import 'package:e_commerce_project/controllers/services/wishlist_service.dart';
-import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/model/product_model.dart';
 import 'package:e_commerce_project/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +38,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
           }
 
           final products =
-              docs.map((doc) => ProductsItem.fromJson(doc.data())).toList();
+              snapshot.data!.docs
+                  .map((doc) => ProductModel.fromJson(doc.data()))
+                  .toList();
 
           return GridView.builder(
             padding: EdgeInsets.all(8),

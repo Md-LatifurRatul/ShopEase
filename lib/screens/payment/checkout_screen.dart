@@ -1,4 +1,4 @@
-import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/model/product_model.dart';
 import 'package:e_commerce_project/screens/payment/stripe_payment_gatway.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key, required this.cartItems});
 
-  final Map<ProductsItem, int> cartItems;
+  final Map<ProductModel, int> cartItems;
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -25,7 +25,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     double total = 0.0;
 
     widget.cartItems.forEach((item, quantity) {
-      total += (item.price! * quantity);
+      total += (item.price * quantity);
     });
 
     return total;
@@ -37,7 +37,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           final product = entry.key;
           final quantity = entry.value;
           return {
-            'name': product.title,
+            'name': product.name,
             'price': product.price,
             'quantity': quantity,
           };
@@ -72,7 +72,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           final product = entry.key;
                           final quantity = entry.value;
                           return {
-                            'name': product.title,
+                            'name': product.name,
                             'price': product.price,
                             'quantity': quantity,
                           };
