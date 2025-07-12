@@ -1,22 +1,23 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce_project/controllers/services/api_services.dart';
+import 'package:e_commerce_project/controllers/banner/banner_provider.dart';
+import 'package:e_commerce_project/controllers/product/product_provider.dart';
 import 'package:e_commerce_project/controllers/services/auth_exception.dart';
 import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
 import 'package:e_commerce_project/controllers/services/wishlist_service.dart';
-import 'package:e_commerce_project/model/product_model_dummy.dart';
-import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/model/product_model.dart';
 import 'package:e_commerce_project/screens/authentication/login_screen.dart';
 import 'package:e_commerce_project/screens/cart/cart_screen.dart';
 import 'package:e_commerce_project/screens/prdouct/product_details_screen.dart';
 import 'package:e_commerce_project/screens/wishlist/wishlist_screen.dart';
-import 'package:e_commerce_project/utils/banner_image_url.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
 import 'package:e_commerce_project/widgets/home_app_bar_drawer.dart';
 import 'package:e_commerce_project/widgets/product_card.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,17 +27,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<ProductModelDummy> futureProducts;
-  List<ProductsItem> _products = [];
-  final List<ProductsItem> _cartItems = [];
-  List<ProductsItem> _filteredProducts = [];
-  Set<String> _categories = {};
+  // late Future<ProductModelDummy> futureProducts;
+  // List<ProductsItem> _products = [];
+  final List<ProductModel> _cartItems = [];
+  // List<ProductsItem> _filteredProducts = [];
+  // Set<String> _categories = {};
   final TextEditingController _searchTEController = TextEditingController();
   late PageController _bannerController;
   int _currentIndex = 0;
   Timer? _timer;
   final _firebaseAuthService = FirebaseAuthService();
-  String? selectedCategory;
+  // String? selectedCategory;
   double minPrice = 0;
   double maxPrice = 1000;
   double selectedRating = 0;
@@ -44,77 +45,96 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    futureProducts = ApiServices().fetchProudctsDummy();
+    // futureProducts = ApiServices().fetchProudctsDummy();
     _bannerController = PageController(viewportFraction: 0.9, initialPage: 0);
+
+    Future.microtask(() {
+      context.read<BannerProvider>().fetchBanner();
+      context.read<ProductProvider>().fetchProducts();
+    });
 
     _startAutoSlide();
 
-    futureProducts.then((data) {
-      setState(() {
-        _products = data.products!;
-        _filteredProducts = _products;
-        _categories = _products.map((p) => p.category!).toSet();
-      });
-    });
+    // futureProducts.then((data) {
+    //   setState(() {
+    //     _products = data.products!;
+    //     _filteredProducts = _products;
+    //     _categories = _products.map((p) => p.category!).toSet();
+    //   });
+    // });
   }
 
   void _startAutoSlide() {
     _timer = Timer.periodic(Duration(seconds: 5), (timer) {
-      if (_currentIndex < BannerImageUrl.bannerImage.length - 1) {
-        _currentIndex++;
-      } else {
-        _currentIndex = 0;
-      }
+      final bannerCount = context.read<BannerProvider>().banners.length;
+
+      if (bannerCount == 0) return;
+
+      setState(() {
+        _currentIndex = (_currentIndex + 1) % bannerCount;
+      });
+
       _bannerController.animateToPage(
         _currentIndex,
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
+
+      // if (_currentIndex < BannerImageUrl.bannerImage.length - 1) {
+      //   _currentIndex++;
+      // } else {
+      //   _currentIndex = 0;
+      // }
+      // _bannerController.animateToPage(
+      //   _currentIndex,
+      //   duration: Duration(milliseconds: 500),
+      //   curve: Curves.easeInOut,
+      // );
     });
   }
 
-  void _filterProducts(String query) {
-    setState(() {
-      _filteredProducts =
-          _products
-              .where(
-                (product) =>
-                    product.title!.toLowerCase().contains(
-                      query.toLowerCase(),
-                    ) ||
-                    product.category!.toLowerCase().contains(
-                      query.toLowerCase(),
-                    ),
-              )
-              .toList();
-    });
-  }
+  // void _filterProducts(String query) {
+  //   setState(() {
+  //     _filteredProducts =
+  //         _products
+  //             .where(
+  //               (product) =>
+  //                   product.title!.toLowerCase().contains(
+  //                     query.toLowerCase(),
+  //                   ) ||
+  //                   product.category!.toLowerCase().contains(
+  //                     query.toLowerCase(),
+  //                   ),
+  //             )
+  //             .toList();
+  //   });
+  // }
 
-  void _applyFilters({
-    String? category,
-    required double minPrice,
-    required double maxPrice,
-    required double minRating,
-  }) {
-    setState(() {
-      _filteredProducts =
-          _products.where((product) {
-            final matchCategory =
-                category == null || product.category == category;
-            final matchPrice =
-                product.price! >= minPrice && product.price! <= maxPrice;
-            final matchRating = product.rating! >= minRating;
-            return matchCategory && matchPrice && matchRating;
-          }).toList();
-    });
-  }
+  // void _applyFilters({
+  //   String? category,
+  //   required double minPrice,
+  //   required double maxPrice,
+  //   required double minRating,
+  // }) {
+  //   setState(() {
+  //     _filteredProducts =
+  //         _products.where((product) {
+  //           final matchCategory =
+  //               category == null || product.category == category;
+  //           final matchPrice =
+  //               product.price! >= minPrice && product.price! <= maxPrice;
+  //           final matchRating = product.rating! >= minRating;
+  //           return matchCategory && matchPrice && matchRating;
+  //         }).toList();
+  //   });
+  // }
 
-  void addToCart(ProductsItem product) {
+  void addToCart(ProductModel product) {
     setState(() {
       _cartItems.add(product);
     });
 
-    ToastMeesage.showToastMessage(context, "${product.title} added to cart!");
+    ToastMeesage.showToastMessage(context, "${product.name} added to cart!");
   }
 
   void openCart() async {
@@ -158,13 +178,17 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: HomeAppBarDrawer(cartItem: _cartItems, signOut: () => _signOut()),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('E-Commerce App'),
+        title: Text('Shop-Ease', style: TextStyle(fontSize: 14)),
         backgroundColor: Colors.deepPurple,
         actions: [
           _buildAppBarWishList(context),
 
           _buildAppBarCart(),
-          const SizedBox(width: 10),
+          TextButton.icon(
+            icon: Icon(Icons.filter_alt, color: Colors.white),
+            onPressed: _showFilterModelSheet,
+            label: Text("Filter", style: TextStyle(color: Colors.white)),
+          ),
           IconButton(
             style: IconButton.styleFrom(backgroundColor: Colors.yellow),
             onPressed: () {
@@ -178,41 +202,56 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               );
             },
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.logout, size: 20),
           ),
         ],
       ),
       body: Column(
         children: [
-          SizedBox(height: 10),
+          SizedBox(height: 5),
 
-          SizedBox(
-            height: 180,
+          Consumer<BannerProvider>(
+            builder: (context, bannerProvider, child) {
+              if (bannerProvider.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (bannerProvider.error != null) {
+                return Center(child: Text(bannerProvider.error!));
+              }
+              final banners = bannerProvider.banners;
+              log("Home Banner: ${banners.toList()}");
 
-            child: PageView(
-              controller: _bannerController,
+              if (banners.isEmpty) {
+                return const Center(child: Text("No Banners"));
+              }
 
-              children: [
-                _buildBanner(BannerImageUrl.bannerImage[0], "Big Sale!"),
-                _buildBanner(BannerImageUrl.bannerImage[1], "New Arrivals"),
-                _buildBanner(BannerImageUrl.bannerImage[2], "Exclusive Offers"),
-              ],
-            ),
+              return SizedBox(
+                height: 140,
+
+                child: PageView.builder(
+                  controller: _bannerController,
+                  onPageChanged:
+                      (index) => setState(() => _currentIndex = index),
+                  itemCount: banners.length,
+                  itemBuilder: (context, index) {
+                    final banner = banners[index];
+                    return _buildBanner(banner.imageUrl, banner.title);
+                  },
+                ),
+              );
+            },
           ),
-          SizedBox(height: 10),
-          TextButton.icon(
-            icon: Icon(Icons.filter_alt),
-            onPressed: _showFilterModelSheet,
-            label: Text("Filter", style: TextStyle(fontSize: 18)),
-          ),
-          SizedBox(height: 10),
+
+          const SizedBox(height: 10),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
 
             child: TextField(
               controller: _searchTEController,
-              onChanged: _filterProducts,
+              onChanged:
+                  (query) =>
+                      context.read<ProductProvider>().filterProducts(query),
               decoration: InputDecoration(
                 hintText: "Search Products",
                 prefixIcon: Icon(Icons.search),
@@ -223,49 +262,53 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Expanded(
-            child: FutureBuilder<ProductModelDummy>(
-              future: futureProducts,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || _filteredProducts.isEmpty) {
-                  return Center(child: Text('No Products found'));
-                } else {
-                  return GridView.builder(
-                    padding: EdgeInsets.all(8),
-                    itemCount: _filteredProducts.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.7,
-                      crossAxisSpacing: 6,
-                      mainAxisSpacing: 8,
-                    ),
-                    itemBuilder: (context, index) {
-                      var product = _filteredProducts[index];
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) =>
-                                      ProductDetaiScreen(products: product),
-                            ),
-                          );
-                        },
-                        child: ProductCard(
-                          product: product,
-                          onAddToCart: addToCart,
-                          addToCartIcon: true,
-                        ),
-                      );
-                    },
-                  );
+            child: Consumer<ProductProvider>(
+              builder: (context, productProvider, child) {
+                if (productProvider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
                 }
+                if (productProvider.error != null) {
+                  return Center(child: Text(productProvider.error!));
+                }
+
+                final products = productProvider.products;
+                log("Home Products ${products.toList()}");
+
+                if (products.isEmpty) {
+                  return const Center(child: Text('No Products found'));
+                }
+                return GridView.builder(
+                  padding: EdgeInsets.all(8),
+                  itemCount: products.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.7,
+                    crossAxisSpacing: 6,
+                    mainAxisSpacing: 8,
+                  ),
+                  itemBuilder: (context, index) {
+                    final product = products[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    ProductDetailsScreen(products: product),
+                          ),
+                        );
+                      },
+                      child: ProductCard(
+                        product: product,
+                        onAddToCart: addToCart,
+                        addToCartIcon: true,
+                      ),
+                    );
+                  },
+                );
               },
             ),
           ),
@@ -285,7 +328,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
             setState(() {});
           },
-          icon: Icon(Icons.favorite_border, color: Colors.white, size: 35),
+          icon: Icon(Icons.favorite_border, color: Colors.white, size: 25),
         ),
 
         StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -327,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
         IconButton(
           onPressed: openCart,
 
-          icon: Icon(Icons.shopping_cart, color: Colors.white, size: 35),
+          icon: Icon(Icons.shopping_cart, color: Colors.white, size: 25),
         ),
 
         if (_cartItems.isNotEmpty)
@@ -388,6 +431,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showFilterModelSheet() {
+    final productProvider = context.read<ProductProvider>();
     showModalBottomSheet(
       context: context,
       builder: (context) {
@@ -398,34 +442,33 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  DropdownButtonFormField<String>(
-                    value: selectedCategory,
-                    hint: Text("Select Category"),
+                  // DropdownButtonFormField<String>(
+                  //   value: selectedCategory,
+                  //   hint: Text("Select Category"),
 
-                    items:
-                        _categories.map((cate) {
-                          return DropdownMenuItem(
-                            value: cate,
+                  //   items:
+                  //       _categories.map((cate) {
+                  //         return DropdownMenuItem(
+                  //           value: cate,
 
-                            child: Text(cate),
-                          );
-                        }).toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        selectedCategory = val;
-                      });
-                    },
-                  ),
+                  //           child: Text(cate),
+                  //         );
+                  //       }).toList(),
+                  //   onChanged: (val) {
+                  //     setState(() {
+                  //       selectedCategory = val;
+                  //     });
+                  //   },
+                  // ),
 
-                  SizedBox(height: 12),
-
+                  // SizedBox(height: 12),
                   Text(
                     "Price Range: \$${minPrice.toInt()} - \$${maxPrice.toInt()}",
                   ),
 
                   RangeSlider(
-                    min: 0,
-                    max: 2000,
+                    min: 0.0,
+                    max: 2000.0,
                     divisions: 20,
 
                     values: RangeValues(minPrice, maxPrice),
@@ -454,18 +497,52 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _applyFilters(
-                        category: selectedCategory,
-                        minPrice: minPrice,
-                        maxPrice: maxPrice,
-                        minRating: selectedRating,
-                      );
-                    },
-                    child: Text("Apply Filters"),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            productProvider.applyFilters(
+                              minPrice: minPrice,
+                              maxPrice: maxPrice,
+                              minRating: selectedRating,
+                            );
+                          },
+                          child: const Text("Apply Filters"),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            setState(() {
+                              minPrice = 0;
+                              maxPrice = 1000;
+                              selectedRating = 0;
+                            });
+                            productProvider.resetFilters();
+                          },
+                          child: const Text("Reset"),
+                        ),
+                      ),
+                    ],
                   ),
+
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     Navigator.pop(context);
+                  //     _applyFilters(
+                  //       category: selectedCategory,
+                  //       minPrice: minPrice,
+                  //       maxPrice: maxPrice,
+                  //       minRating: selectedRating,
+                  //     );
+                  //   },
+                  //   child: Text("Apply Filters"),
+                  // ),
                 ],
               ),
             );
@@ -479,6 +556,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _bannerController.dispose();
     _timer?.cancel();
+    _searchTEController.dispose();
     super.dispose();
   }
 }

@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce_project/controllers/services/wishlist_service.dart';
-import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/model/product_model.dart';
 import 'package:e_commerce_project/widgets/build_stars_rating.dart';
 import 'package:flutter/material.dart';
 
@@ -12,9 +12,9 @@ class ProductCard extends StatefulWidget {
     required this.addToCartIcon,
   });
 
-  final ProductsItem product;
+  final ProductModel product;
 
-  final Function(ProductsItem)? onAddToCart;
+  final Function(ProductModel)? onAddToCart;
   final bool addToCartIcon;
 
   @override
@@ -66,12 +66,13 @@ class _ProductCardState extends State<ProductCard> {
                 borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
 
                 child: CachedNetworkImage(
-                  imageUrl: widget.product.thumbnail!,
+                  imageUrl: widget.product.imageUrl,
                   placeholder:
                       (context, url) =>
                           Center(child: CircularProgressIndicator()),
                   errorWidget: (context, url, error) => Icon(Icons.error),
                   width: double.infinity,
+                  height: 160,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -116,7 +117,7 @@ class _ProductCardState extends State<ProductCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.product.title!,
+                  widget.product.name,
                   style: TextStyle(fontWeight: FontWeight.bold),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -136,7 +137,7 @@ class _ProductCardState extends State<ProductCard> {
 
                     Row(
                       children: BuildStarsRating.buildStarRating(
-                        widget.product.rating ?? 0,
+                        widget.product.rating,
                         15,
                       ),
                     ),

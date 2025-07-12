@@ -1,5 +1,5 @@
 import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
-import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/model/product_model.dart';
 import 'package:e_commerce_project/screens/cart/cart_screen.dart';
 import 'package:e_commerce_project/screens/profile/profile_screen.dart';
 import 'package:e_commerce_project/screens/wishlist/wishlist_screen.dart';
@@ -12,7 +12,7 @@ class HomeAppBarDrawer extends StatelessWidget {
     required this.cartItem,
     required this.signOut,
   });
-  final List<ProductsItem> cartItem;
+  final List<ProductModel> cartItem;
   final VoidCallback signOut;
 
   @override

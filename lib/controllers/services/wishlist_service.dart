@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_commerce_project/model/products_item.dart';
+import 'package:e_commerce_project/model/product_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class WishlistService {
@@ -7,7 +7,7 @@ class WishlistService {
 
   static final _firestore = FirebaseFirestore.instance;
 
-  static Future<void> addToWishList(ProductsItem product) async {
+  static Future<void> addToWishList(ProductModel product) async {
     final user = _auth.currentUser;
 
     if (user == null) return;
@@ -33,7 +33,7 @@ class WishlistService {
         .delete();
   }
 
-  static Future<List<ProductsItem>> getWishList() async {
+  static Future<List<ProductModel>> getWishList() async {
     final user = _auth.currentUser;
 
     if (user == null) return [];
@@ -46,7 +46,7 @@ class WishlistService {
             .get();
 
     return snapshot.docs
-        .map((doc) => ProductsItem.fromJson(doc.data()))
+        .map((doc) => ProductModel.fromJson(doc.data()))
         .toList();
   }
 
