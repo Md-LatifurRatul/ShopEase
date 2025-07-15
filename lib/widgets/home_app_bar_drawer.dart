@@ -1,6 +1,7 @@
 import 'package:e_commerce_project/controllers/services/firebase_auth_service.dart';
 import 'package:e_commerce_project/model/product_model.dart';
 import 'package:e_commerce_project/screens/cart/cart_screen.dart';
+import 'package:e_commerce_project/screens/order/orders_screen.dart';
 import 'package:e_commerce_project/screens/profile/profile_screen.dart';
 import 'package:e_commerce_project/screens/wishlist/wishlist_screen.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
@@ -71,7 +72,12 @@ class HomeAppBarDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.favorite),
             title: Text("My Orders"),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => OrdersScreen()),
+              );
+            },
           ),
           Divider(),
           ListTile(

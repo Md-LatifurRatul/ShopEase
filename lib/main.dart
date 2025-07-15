@@ -1,4 +1,5 @@
 import 'package:e_commerce_project/controllers/banner/banner_provider.dart';
+import 'package:e_commerce_project/controllers/order/orders_provider.dart';
 import 'package:e_commerce_project/controllers/product/product_provider.dart';
 import 'package:e_commerce_project/e_commerce_app.dart';
 import 'package:e_commerce_project/services/utils/api_url.dart';
@@ -29,6 +30,8 @@ Future<void> main() async {
         ),
 
         ChangeNotifierProvider<BannerProvider>(create: (_) => BannerProvider()),
+
+        ChangeNotifierProvider<OrdersProvider>(create: (_) => OrdersProvider()),
       ],
       child: const ECommerceApp(),
     ),
