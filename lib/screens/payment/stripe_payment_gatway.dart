@@ -1,5 +1,3 @@
-import 'package:e_commerce_project/controllers/services/order_service.dart';
-import 'package:e_commerce_project/controllers/services/stripe_service.dart';
 import 'package:flutter/material.dart';
 
 class StripePaymentGateway extends StatelessWidget {
@@ -30,29 +28,26 @@ class StripePaymentGateway extends StatelessWidget {
               ),
             ),
             onPressed: () async {
-              final success = await StripeService.instance.makePayment(amount);
-              if (success) {
-                await OrderService.saveOrder(
-                  products: products,
-                  amount: amount,
-                  address: address,
-                  phone: phone,
-                  paymentMethod: "Stripe",
-                );
-                // ToastMeesage.showToastMessage(
-                //   context,
-                //   "Payment successful. Order placed!",
-                // );
-                Navigator.pop(context, true);
-                // Navigator.pushAndRemoveUntil(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => HomeScreen()),
-                //   (route) => false,
-                // );
-              } else {
-                Navigator.pop(context, false);
-                // ToastMeesage.showToastMessage(context, "Payment failed!");
-              }
+              // final success = await StripeService.instance.makePayment(amount);
+              // if (success) {
+              //   await OrderService.saveOrder(
+              //     products: products,
+              //     amount: amount,
+              //     address: address,
+              //     phone: phone,
+              //     paymentMethod: "Stripe",
+              //   );
+
+              //   Navigator.pop(context, true);
+              // Navigator.pushAndRemoveUntil(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => HomeScreen()),
+              //   (route) => false,
+              // );
+              // } else {
+              //   Navigator.pop(context, false);
+              //   // ToastMeesage.showToastMessage(context, "Payment failed!");
+              // }
             },
             child: Text("Pay \$${amount.toStringAsFixed(2)} via Stripe"),
           ),
