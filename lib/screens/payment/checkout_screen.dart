@@ -1,4 +1,6 @@
+import 'package:e_commerce_project/controllers/services/order_service.dart';
 import 'package:e_commerce_project/model/product_model.dart';
+import 'package:e_commerce_project/screens/payment/ssl_commerz_payment.dart';
 import 'package:e_commerce_project/screens/payment/stripe_payment_gatway.dart';
 import 'package:e_commerce_project/widgets/confirm_dialog.dart';
 import 'package:e_commerce_project/widgets/toast_meesage.dart';
@@ -103,9 +105,60 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         context,
         title: 'Confirm Order',
         content: "Place order with Cash on Delivery?",
-        onPressed: () {
+        confirmString: "Yes, Confirm",
+        onPressed: () async {
           ToastMeesage.showToastMessage(context, "Order placed successfully");
+
+          await OrderService.saveOrder(
+            products: products,
+            amount: getTotalPrice(),
+            address: _addressController.text,
+            phone: _phoneController.text,
+            paymentMethod: "Cash on Deleivery",
+          );
+
           Navigator.pop(context, true);
+        },
+      );
+    } else if (_selectedPaymentMethod == "SslCommerz") {
+      ConfirmDialog.showAlertDialogue(
+        context,
+        title: 'Confirm Order',
+        content: "Place order with Cash on Delivery?",
+        confirmString: "Yes, Confirm",
+        onPressed: () async {
+          Navigator.pop(context);
+          final paymentResult = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => SslCommerzPayment(
+                    products:
+                        widget.cartItems.entries.map((entry) {
+                          final product = entry.key;
+                          final quantity = entry.value;
+                          return {
+                            'name': product.name,
+                            'price': product.price,
+                            'quantity': quantity,
+                          };
+                        }).toList(),
+                    amount: getTotalPrice(),
+                    address: _addressController.text,
+                    phone: _phoneController.text,
+                  ),
+            ),
+          );
+          if (paymentResult == true) {
+            widget.cartItems.clear();
+            ToastMeesage.showToastMessage(
+              context,
+              "Order placed successfully.",
+            );
+            Navigator.pop(context, true);
+          } else {
+            ToastMeesage.showToastMessage(context, "Payment was cancelled.");
+          }
         },
       );
     } else {
@@ -156,7 +209,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               value: _selectedPaymentMethod,
 
               items:
-                  ["Cash on Delivery", "Stripe", "Bkash"]
+                  ["Cash on Delivery", "Stripe", "SslCommerz"]
                       .map(
                         (method) => DropdownMenuItem(
                           value: method,
