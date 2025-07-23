@@ -77,7 +77,7 @@ class SslCommerzPayment extends StatelessWidget {
             onPressed: () async {
               sslCommerz(context);
             },
-            child: Text("Pay \$${amount.toStringAsFixed(2)} via Stripe"),
+            child: Text("Pay \$${amount.toStringAsFixed(2)} via SSL"),
           ),
         ),
       ),
