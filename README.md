@@ -107,14 +107,7 @@ All logic handled in `lib/screens/payment/checkout_screen.dart`.
 
 ## Getting Started
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/Md-LatifurRatul/ShopEase.git
-cd ShopEase
-```
-
-### 2. Configure API Credentials
+### 1. Configure API Credentials
 
 - Create `lib/services/utils/api_url.dart` and add your credentials:
   - Supabase URL & Key
@@ -122,18 +115,18 @@ cd ShopEase
   - Stripe Keys
   - SSLCommerz Store ID & Pass
 
-### 3. Install Dependencies
+### 2. Install Dependencies
 
 ```bash
 flutter pub get
 ```
 
-### 4. Set Up Firebase
+### 3. Set Up Firebase
 
 - Add your `firebase_options.dart` for the current platform.
 - Configure your Firebase project and enable Authentication and Firestore.
 
-### 5. Run the App
+### 4. Run the App
 
 ```bash
 flutter run
